@@ -17,15 +17,28 @@ type Query {
 
   """Retorna un numero random entre 0 y to"""
   randomZeroTo(to: Int): Int!
-  todos: [Todo!]!
+  todos(status: Boolean): [Todo!]!
   todo(id: Int!): Todo!
+  totalTodos: Int!
+  completedTodos: Int!
+  pendingTodos: Int!
 }
 
 type Mutation {
   createTodo(createTodoInput: CreateTodoInput!): Todo!
+  updateTodo(updateTodoInput: UpdateTodoInput!): Todo!
+  removeTodo(id: Int!): Boolean!
 }
 
 input CreateTodoInput {
   """What need to be done"""
   description: String!
+}
+
+input UpdateTodoInput {
+  id: Int!
+
+  """What need to be done"""
+  description: String
+  done: Boolean
 }

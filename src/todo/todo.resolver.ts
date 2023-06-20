@@ -1,7 +1,7 @@
 import { Resolver, Query, Args, Int, Mutation } from '@nestjs/graphql';
 import { Todo } from './entities/todo.entity';
 import { TodoService } from './todo.service';
-import { CreateTodoInput } from './dto/inputs/create-todo.input';
+import { CreateTodoInput, UpdateTodoInput, StatusArgs } from './dto';
 
 @Resolver()
 export class TodoResolver {
@@ -9,8 +9,10 @@ export class TodoResolver {
 
   // devuelve un arreglo de todos
   @Query(() => [Todo], { name: 'todos' }) // consultas
-  findAll(): Todo[] {
-    return this.todoService.findAll();
+  findAll(
+    @Args() status: StatusArgs,
+  ): Todo[] {
+    return this.todoService.findAll(status);
   }
 
   @Query(() => Todo, { name: 'todo' })
@@ -23,5 +25,30 @@ export class TodoResolver {
     return this.todoService.create(createTodoInput);
   }
 
-  updateTodo() {}
+  @Mutation(() => Todo, { name: 'updateTodo' })
+  updateTodo(@Args('updateTodoInput') updateTodoInput: UpdateTodoInput) {
+    return this.todoService.update(updateTodoInput);
+  }
+
+  @Mutation(() => Boolean)
+  removeTodo(
+    @Args('id', { type: () => Int }) id: number,
+  ) {
+    return this.todoService.delete(id);
+  }
+
+  @Query(() => Int, { name: 'totalTodos' })
+  totalTodos() {
+    return this.todoService.totalTodos;
+  }
+
+  @Query(() => Int, { name: 'completedTodos' })
+  completedTodos() {
+    return this.todoService.completedTodos;
+  }
+
+  @Query(() => Int, { name: 'pendingTodos' })
+  pendingTodos() {
+    return this.todoService.pendingTodos;
+  }
 }
